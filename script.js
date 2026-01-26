@@ -1,257 +1,214 @@
 let health = 100;
-let grades = 100;
 let confidence = 50;
+let grades = 100;
 let friends = 0;
 let stress = 0;
+let addiction = 0;
 let support = 0;
-
-let drugStage = 0;   // 0=keine, 1=nikotin, 2=alkohol, 3=cannabis, 4=pillen, 5=kokain, 6=heroin
-let recovery = 0;
+let hope = 0;
 
 let eventsSeen = [];
 
 const story = document.getElementById("story");
 const choicesDiv = document.getElementById("choices");
 
-function updateStats() {
-    health = Math.max(0, health);
-    confidence = Math.max(0, confidence);
-    document.getElementById("health").textContent = health;
-    document.getElementById("grades").textContent = grades;
-    document.getElementById("confidence").textContent = confidence;
-    document.getElementById("friends").textContent = friends;
+function updateStats(){
+document.getElementById("health").textContent = health;
+document.getElementById("confidence").textContent = confidence;
+document.getElementById("grades").textContent = grades;
+document.getElementById("friends").textContent = friends;
 }
 
-function good(){ document.body.classList.add("good-flash"); setTimeout(()=>document.body.classList.remove("good-flash"),300);}
-function bad(){ document.body.classList.add("bad-flash"); setTimeout(()=>document.body.classList.remove("bad-flash"),300);}
-function darkWorld(){ document.body.classList.add("dark-bg"); }
+function good(){document.body.classList.add("good-flash");setTimeout(()=>document.body.classList.remove("good-flash"),300);}
+function bad(){document.body.classList.add("bad-flash");setTimeout(()=>document.body.classList.remove("bad-flash"),300);}
 
-/* ================= ENDING CHECK ================= */
+function updateWorld(){
+if(addiction>=3) document.body.classList.add("dark-bg");
+if(health<40) document.body.classList.add("shake");
+if(friends>=3) document.body.classList.add("warm");
+}
+
+/* ========== ENDING CHECK ========== */
 
 function checkEndings(){
-    if (drugStage >= 6 && health < 40) return overdoseEnding();
-    if (drugStage >= 6) return addictionEnding();
-    if (recovery >= 4 && support >= 3) return recoveryEnding();
-    if (grades >= 140 && support >= 3) return goodEnding();
-    if (stress >= 7 && confidence <= 15) return burnoutEnding();
-    return false;
+if(addiction>=7 && health<30) return overdoseEnding();
+if(addiction>=8) return lostEnding();
+if(hope>=5 && support>=4) return recoveryEnding();
+if(grades>=150 && friends>=4) return successEnding();
+if(stress>=8 && confidence<20) return breakdownEnding();
+return false;
 }
 
 function nextEvent(){
-    updateStats();
-    if(checkEndings()) return;
+updateStats();
+updateWorld();
+if(checkEndings()) return;
 
-    const available = allEvents.filter(e => !eventsSeen.includes(e.id));
-    if(available.length === 0) return neutralEnding();
+let available = allEvents.filter(e=>!eventsSeen.includes(e.id));
+if(available.length===0) return neutralEnding();
 
-    const e = available[Math.floor(Math.random()*available.length)];
-    eventsSeen.push(e.id);
-    e.play();
+let e = available[Math.floor(Math.random()*available.length)];
+eventsSeen.push(e.id);
+e.play();
 }
 
-/* ================= EVENTS ================= */
+/* ========== EVENTS ========== */
 
 const allEvents = [
 
 {
-id:"nicotine_offer",
+id:"new_student",
 play:()=>{
-story.textContent="Jemand bietet dir Nikotinbeutel an: 'Ist doch harmlos.'";
+story.textContent="Ein neuer Pinguin sitzt allein in der Cafeteria.";
+choicesDiv.innerHTML=`
+<button onclick="befriend()">😊 Dazusetzen</button>
+<button onclick="ignore()">🙈 Ignorieren</button>
+<button onclick="makeJoke()">😎 Cool wirken</button>`;
+}
+},
+
+{
+id:"nicotine",
+play:()=>{
+story.textContent="Jemand bietet dir Nikotinbeutel an.";
 choicesDiv.innerHTML=`
 <button onclick="refuse()">❌ Nein</button>
-<button onclick="useSubstance(1)">😬 Probieren</button>
+<button onclick="useDrug(1)">😬 Probieren</button>
 <button onclick="walkAway()">🚶 Weggehen</button>`;
 }
 },
 
 {
-id:"alcohol_party",
+id:"alcohol",
 play:()=>{
-story.textContent="Auf einer Feier wird viel Alkohol getrunken.";
+story.textContent="Auf einer Party fließt viel Alkohol.";
 choicesDiv.innerHTML=`
-<button onclick="refuse()">🥤 Bei Softdrinks bleiben</button>
-<button onclick="useSubstance(2)">🍺 Mittrinken</button>
-<button onclick="callFriend()">📱 Freund anrufen und gehen</button>`;
+<button onclick="refuse()">🥤 Nichts trinken</button>
+<button onclick="useDrug(2)">🍺 Mittrinken</button>
+<button onclick="callFriend()">📱 Freund anrufen</button>`;
 }
 },
 
 {
-id:"cannabis_circle",
+id:"weed",
 play:()=>{
-story.textContent="Eine Gruppe sitzt im Park und raucht Cannabis.";
+story.textContent="Freunde rauchen Cannabis im Park.";
 choicesDiv.innerHTML=`
 <button onclick="refuse()">❌ Ablehnen</button>
-<button onclick="useSubstance(3)">😶 Mitmachen</button>
-<button onclick="joinStudy()">📚 Weiter zum Lernen</button>`;
+<button onclick="useDrug(3)">😶 Mitmachen</button>
+<button onclick="joinClub()">⚽ Zum Sport gehen</button>`;
 }
 },
 
 {
-id:"pills_offer",
+id:"pills",
 play:()=>{
-story.textContent="Jemand sagt, diese Pillen helfen gegen Stress.";
+story.textContent="Jemand bietet dir starke Beruhigungspillen an.";
 choicesDiv.innerHTML=`
-<button onclick="healthyCoping()">🧠 Andere Wege gegen Stress suchen</button>
-<button onclick="useSubstance(4)">⚠️ Nehmen</button>`;
+<button onclick="healthyCoping()">🧠 Anders mit Stress umgehen</button>
+<button onclick="useDrug(4)">⚠️ Nehmen</button>`;
 }
 },
 
 {
-id:"cocaine_scene",
+id:"cocaine",
 play:()=>{
-story.textContent="In einer Wohnung taucht Kokain auf. Die Stimmung ist angespannt.";
+story.textContent="Auf einer Feier taucht Kokain auf.";
 choicesDiv.innerHTML=`
 <button onclick="leaveScene()">🚪 Sofort gehen</button>
-<button onclick="useSubstance(5)">❗ Bleiben und nehmen</button>`;
+<button onclick="useDrug(5)">❗ Bleiben</button>`;
 }
 },
 
 {
-id:"heroin_scene",
+id:"heroin",
 play:()=>{
-story.textContent="Du gerätst in Kontakt mit einer sehr gefährlichen Droge: Heroin.";
+story.textContent="Du gerätst an Heroin — eine extrem gefährliche Droge.";
 choicesDiv.innerHTML=`
-<button onclick="seekHelp()">🆘 Hilfe suchen</button>
-<button onclick="useSubstance(6)">💀 Darauf einlassen</button>`;
+<button onclick="seekHelp()">🆘 Hilfe holen</button>
+<button onclick="useDrug(6)">💀 Darauf einlassen</button>`;
+}
+},
+
+{
+id:"study_group",
+play:()=>{
+story.textContent="Ein Lernkreis sucht noch jemanden.";
+choicesDiv.innerHTML=`
+<button onclick="joinStudy()">📚 Mitlernen</button>
+<button onclick="skipStudy()">😴 Absagen</button>`;
 }
 },
 
 {
 id:"support_friend",
 play:()=>{
-story.textContent="Ein Freund merkt, dass es dir nicht gut geht, und bietet Hilfe an.";
+story.textContent="Ein Freund merkt, dass es dir schlecht geht.";
 choicesDiv.innerHTML=`
-<button onclick="acceptSupport()">🤝 Hilfe annehmen</button>
-<button onclick="pushAway()">🙅 Ablehnen</button>`;
-}
-},
-
-{
-id:"exam_event",
-play:()=>{
-story.textContent="Eine wichtige Prüfung steht an.";
-choicesDiv.innerHTML=`
-<button onclick="grades+=20; support++; good(); nextEvent()">📖 Lernen</button>
-<button onclick="stress++; bad(); nextEvent()">😵 Nicht vorbereitet</button>`;
+<button onclick="acceptSupport()">🤝 Öffnen</button>
+<button onclick="pushAway()">🙅 Wegstoßen</button>`;
 }
 }
 
 ];
 
-/* ================= DECISIONS ================= */
+/* ========== DECISIONS ========== */
 
-function useSubstance(stage){
-    drugStage = Math.max(drugStage, stage);
-    health -= 10 + stage*2;
-    grades -= 5 + stage;
-    confidence -= 2;
-    stress++;
-    bad();
-    if(drugStage>=3) darkWorld();
-    nextEvent();
+function useDrug(level){
+addiction += level;
+health -= 8 + level*3;
+grades -= 5 + level;
+confidence -= 3;
+stress++;
+bad();
+nextEvent();
 }
 
-function refuse(){
-    confidence+=6;
-    support++;
-    good();
-    nextEvent();
-}
+function refuse(){confidence+=6;hope++;good();nextEvent();}
+function walkAway(){confidence+=8;hope++;good();nextEvent();}
+function healthyCoping(){health+=10;hope++;good();nextEvent();}
+function leaveScene(){confidence+=10;hope++;good();nextEvent();}
+function seekHelp(){support+=2;hope+=2;health+=5;good();nextEvent();}
+function callFriend(){support++;hope++;good();nextEvent();}
+function acceptSupport(){support++;friends++;hope++;good();nextEvent();}
+function pushAway(){stress++;confidence-=5;bad();nextEvent();}
+function joinStudy(){grades+=15;friends++;hope++;good();nextEvent();}
+function skipStudy(){stress++;bad();nextEvent();}
+function joinClub(){friends++;health+=5;hope++;good();nextEvent();}
+function befriend(){friends++;confidence+=5;good();nextEvent();}
+function ignore(){confidence-=3;nextEvent();}
+function makeJoke(){confidence+=2;friends--;nextEvent();}
 
-function walkAway(){
-    confidence+=8;
-    support++;
-    good();
-    nextEvent();
-}
+/* ========== ENDINGS ========== */
 
-function healthyCoping(){
-    health+=10;
-    recovery++;
-    good();
-    nextEvent();
-}
-
-function leaveScene(){
-    confidence+=10;
-    recovery++;
-    good();
-    nextEvent();
-}
-
-function seekHelp(){
-    recovery+=2;
-    support++;
-    health+=5;
-    good();
-    nextEvent();
-}
-
-function acceptSupport(){
-    support++;
-    recovery++;
-    confidence+=5;
-    good();
-    nextEvent();
-}
-
-function pushAway(){
-    stress++;
-    confidence-=5;
-    bad();
-    nextEvent();
-}
-
-function callFriend(){
-    support++;
-    recovery++;
-    good();
-    nextEvent();
-}
-
-function joinStudy(){
-    grades+=15;
-    support++;
-    good();
-    nextEvent();
-}
-
-/* ================= ENDINGS ================= */
-
-function goodEnding(){
-story.innerHTML="🌟 STARKES ENDE 🌟<br>Du hast gesunde Freunde, gute Noten und triffst bewusste Entscheidungen.";
-choicesDiv.innerHTML="";
-return true;
+function successEnding(){
+story.innerHTML="🌟 ERFOLGS-ENDE 🌟<br>Du hast stabile Freunde, gute Noten und ein gesundes Leben aufgebaut.";
+choicesDiv.innerHTML="";return true;
 }
 
 function recoveryEnding(){
-story.innerHTML="💚 HILFE-ENDE 💚<br>Du hast dir Unterstützung gesucht und einen Weg aus der Spirale gefunden.";
-choicesDiv.innerHTML="";
-return true;
+story.innerHTML="💚 WIEDER-RAUS-ENDE 💚<br>Du hast Hilfe angenommen und dich Schritt für Schritt zurückgekämpft.";
+choicesDiv.innerHTML="";return true;
 }
 
-function addictionEnding(){
-story.innerHTML="🌑 SUCHT-ENDE 🌑<br>Immer stärkere Drogen bestimmten dein Leben. Alles dreht sich nur noch darum.";
-choicesDiv.innerHTML="";
-return true;
+function lostEnding(){
+story.innerHTML="🌑 VERLORENES ENDE 🌑<br>Die Sucht hat dein Leben komplett übernommen.";
+choicesDiv.innerHTML="";return true;
 }
 
 function overdoseEnding(){
-story.innerHTML="☠️ ÜBERDOSIS ☠️<br>Dein Körper hat die Belastung nicht mehr ausgehalten.";
-choicesDiv.innerHTML="";
-return true;
+story.innerHTML="☠️ ÜBERDOSIS ☠️<br>Dein Körper konnte die Belastung nicht mehr überstehen.";
+choicesDiv.innerHTML="";return true;
 }
 
-function burnoutEnding(){
-story.innerHTML="🌫️ BURNOUT 🌫️<br>Stress und Rückzug haben dich komplett erschöpft.";
-choicesDiv.innerHTML="";
-return true;
+function breakdownEnding(){
+story.innerHTML="🌫️ ZUSAMMENBRUCH 🌫️<br>Stress, Isolation und Druck wurden zu viel.";
+choicesDiv.innerHTML="";return true;
 }
 
 function neutralEnding(){
-story.innerHTML="❄️ OFFENES ENDE ❄️<br>Dein Weg ist noch nicht entschieden.";
-choicesDiv.innerHTML="";
-return true;
+story.innerHTML="❄️ OFFENES ENDE ❄️<br>Dein Weg ist noch nicht festgelegt.";
+choicesDiv.innerHTML="";return true;
 }
 
 nextEvent();
