@@ -1,44 +1,55 @@
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(#87ceeb, #ffffff);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    transition: background-color 0.5s;
+    margin:0;
+    font-family:Arial, sans-serif;
+    background: linear-gradient(#87ceeb,#ffffff);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    transition: background 1s;
 }
 
 .game-container {
-    background: white;
-    padding: 25px;
-    border-radius: 15px;
-    width: 440px;
-    text-align: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    animation: float 3s ease-in-out infinite;
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    width:520px;
+    text-align:center;
+    box-shadow:0 10px 25px rgba(0,0,0,0.2);
 }
 
-button {
-    margin: 6px;
-    padding: 10px 14px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
+.chapter-map {
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:10px;
+    font-size:14px;
 }
 
-.good-flash { animation: goodFlash 0.3s; }
-.bad-flash { animation: badFlash 0.3s; }
-.dark-bg { background: linear-gradient(#2c3e50, #000000); }
+.chapter {
+    padding:4px 6px;
+    border-radius:6px;
+    background:#eee;
+}
 
-@keyframes goodFlash { 0% {background:#b6fcb6;} 100% {background:white;} }
-@keyframes badFlash { 0% {background:#ffb3b3;} 100% {background:white;} }
-@keyframes float { 0%{transform:translateY(0);}50%{transform:translateY(-5px);}100%{transform:translateY(0);} }
+.chapter.active { background:#ffd89b; }
 
-.dark-bg { background: linear-gradient(#1a1a1a, #000); }
-.warm { background: linear-gradient(#ffd89b, #ffffff); }
-.shake { animation: shake 0.3s infinite; }
+.buttons button {
+    margin:5px;
+    padding:8px 12px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
 
+.good-flash { animation:goodFlash .3s; }
+.bad-flash { animation:badFlash .3s; }
+
+.dark-bg { background:linear-gradient(#1a1a1a,#000); color:white; }
+.warm { background:linear-gradient(#ffd89b,#fff); }
+.shake { animation:shake .3s infinite; }
+
+@keyframes goodFlash {0%{background:#b6fcb6;}100%{background:white;}}
+@keyframes badFlash {0%{background:#ffb3b3;}100%{background:white;}}
 @keyframes shake {
 0%{transform:translateX(0)}
 25%{transform:translateX(-2px)}
@@ -46,5 +57,3 @@ button {
 75%{transform:translateX(-2px)}
 100%{transform:translateX(0)}
 }
-
-
