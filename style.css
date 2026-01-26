@@ -34,3 +34,17 @@ button {
 @keyframes goodFlash { 0% {background:#b6fcb6;} 100% {background:white;} }
 @keyframes badFlash { 0% {background:#ffb3b3;} 100% {background:white;} }
 @keyframes float { 0%{transform:translateY(0);}50%{transform:translateY(-5px);}100%{transform:translateY(0);} }
+
+.dark-bg { background: linear-gradient(#1a1a1a, #000); }
+.warm { background: linear-gradient(#ffd89b, #ffffff); }
+.shake { animation: shake 0.3s infinite; }
+
+@keyframes shake {
+0%{transform:translateX(0)}
+25%{transform:translateX(-2px)}
+50%{transform:translateX(2px)}
+75%{transform:translateX(-2px)}
+100%{transform:translateX(0)}
+}
+
+
