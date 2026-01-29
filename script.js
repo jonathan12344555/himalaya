@@ -14,9 +14,6 @@ document.getElementById("confidence").textContent=confidence;
 
 function updateEffects(){
 document.body.classList.toggle("blur", addiction>=3);
-document.body.classList.toggle("heavy-blur", addiction>=6);
-document.body.classList.toggle("dark", addiction>=7);
-document.body.classList.toggle("vignette", addiction>=8);
 document.querySelector(".game-container").classList.toggle("spin", addiction>=9);
 }
 
@@ -122,3 +119,4 @@ throw new Error("Ende");
 }
 
 nextStep();
+
