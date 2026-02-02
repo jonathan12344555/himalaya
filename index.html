@@ -1,27 +1,185 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<title>Pinguin – Dein Weg</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Selbsttest – Substanzkonsum</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background: linear-gradient(180deg, #fdf6f9, #e6f7f5);
+      color: #444;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: #5a6c7d;
+    }
+
+    .bird {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .question {
+      margin: 20px 0;
+      padding: 15px;
+      border-radius: 15px;
+      background: #f9fcff;
+    }
+
+    label {
+      display: block;
+      margin: 5px 0;
+      cursor: pointer;
+    }
+
+    button {
+      background: #a8dadc;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      display: block;
+      margin: 25px auto 0 auto;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #90cfd1;
+    }
+
+    .result {
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 15px;
+      background: #eefaf7;
+      display: none;
+    }
+
+    .disclaimer {
+      font-size: 12px;
+      margin-top: 25px;
+      color: #777;
+      text-align: center;
+    }
+  </style>
 </head>
+
 <body>
-
-<div class="game-container">
-    <h1>🐧 Der Weg des Pinguins</h1>
-
-    <div id="story" class="story-box"></div>
-
-    <div class="stats">
-        ❤️ Leben: <span id="health"></span>
-        📚 Noten: <span id="grades"></span>
-        👥 Freunde: <span id="friends"></span>
-        🧠 Confidence: <span id="confidence"></span>
+  <div class="container">
+    <div class="bird">
+      <svg width="120" height="120" viewBox="0 0 120 120">
+        <circle cx="60" cy="65" r="35" fill="#ffd166"/>
+        <circle cx="75" cy="50" r="20" fill="#ffe29a"/>
+        <circle cx="82" cy="45" r="5" fill="#333"/>
+        <polygon points="95,55 115,60 95,65" fill="#f4a261"/>
+        <circle cx="40" cy="80" r="10" fill="#ffb703"/>
+      </svg>
+      <h1>Wie gefährdet bin ich?</h1>
+      <p>Ein sanfter Selbsttest zu deinem Umgang mit Substanzen</p>
     </div>
 
-    <div id="choices" class="buttons"></div>
-</div>
+    <form id="quizForm"></form>
 
-<script src="script.js"></script>
+    <!-- WICHTIG: type="button" damit kein Formular-Submit passiert -->
+    <button type="button" id="resultBtn">Auswertung anzeigen</button>
+
+    <div class="result" id="resultBox"></div>
+
+    <div class="disclaimer">
+      Dieser Test ist keine medizinische Diagnose. Wenn du dir Sorgen machst,
+      wende dich an medizinische oder psychologische Fachstellen.
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      "Ich konsumiere Alkohol oder andere Substanzen häufiger als geplant.",
+      "Ich habe versucht, meinen Konsum zu reduzieren, es aber nicht geschafft.",
+      "Ich denke oft darüber nach, wann ich wieder konsumieren kann.",
+      "Mein Konsum hat meine Arbeit oder Schule beeinflusst.",
+      "Freunde oder Familie haben meinen Konsum kritisiert.",
+      "Ich konsumiere, um Stress oder negative Gefühle zu bewältigen.",
+      "Ich habe wegen Konsum Verpflichtungen vernachlässigt.",
+      "Ich brauche mehr als früher, um die gleiche Wirkung zu spüren.",
+      "Ich habe Schuldgefühle nach dem Konsum.",
+      "Ich konsumiere heimlich oder spiele es herunter.",
+      "Ich hatte schon Gedächtnislücken oder Filmrisse.",
+      "Ich habe riskante Situationen durch Konsum erlebt.",
+      "Ich fühle mich unruhig oder gereizt ohne Konsum.",
+      "Ich konsumiere weiter, obwohl es mir schadet.",
+      "Ich habe Hobbys oder Interessen wegen Konsum aufgegeben."
+    ];
+
+    const form = document.getElementById("quizForm");
+    const resultBtn = document.getElementById("resultBtn");
+
+    // Fragen erzeugen
+    questions.forEach((q, index) => {
+      const div = document.createElement("div");
+      div.className = "question";
+      div.innerHTML = `<strong>${index + 1}. ${q}</strong>
+        <label><input type="radio" name="q${index}" value="0" required> Nie</label>
+        <label><input type="radio" name="q${index}" value="1"> Selten</label>
+        <label><input type="radio" name="q${index}" value="2"> Manchmal</label>
+        <label><input type="radio" name="q${index}" value="3"> Oft</label>
+        <label><input type="radio" name="q${index}" value="4"> Sehr oft</label>`;
+      form.appendChild(div);
+    });
+
+    resultBtn.addEventListener("click", calculateResult);
+
+    function calculateResult() {
+      const formData = new FormData(form);
+      let score = 0;
+      let answered = 0;
+
+      for (let value of formData.values()) {
+        score += parseInt(value);
+        answered++;
+      }
+
+      if (answered < questions.length) {
+        alert("Bitte beantworte alle Fragen 🐦");
+        return;
+      }
+
+      const resultBox = document.getElementById("resultBox");
+      resultBox.style.display = "block";
+
+      let message = "";
+
+      if (score < 15) {
+        message = "🟢 Geringes Risiko: Aktuell zeigen sich nur wenige Anzeichen für problematischen Konsum.";
+      } else if (score < 30) {
+        message = "🟡 Mittleres Risiko: Einige Antworten deuten auf mögliche Risiken hin. Beobachte deinen Konsum bewusst.";
+      } else if (score < 45) {
+        message = "🟠 Erhöhtes Risiko: Mehrere Anzeichen sprechen für einen problematischen Umgang. Unterstützung könnte hilfreich sein.";
+      } else {
+        message = "🔴 Hohes Risiko: Deine Antworten zeigen viele Hinweise auf eine mögliche Abhängigkeit. Bitte wende dich an Fachstellen.";
+      }
+
+      resultBox.innerHTML = `<h2>Dein Ergebnis</h2>
+                             <p><strong>Punktzahl:</strong> ${score}</p>
+                             <p>${message}</p>`;
+
+      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+    }
+  </script>
 </body>
 </html>
