@@ -1,185 +1,233 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Selbsttest – Substanzkonsum</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Selbstreflexions-Test</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: "Segoe UI", Tahoma, sans-serif;
-      background: linear-gradient(180deg, #fdf6f9, #e6f7f5);
-      color: #444;
-      display: flex;
-      justify-content: center;
-      padding: 20px;
-    }
+<style>
+  body {
+    margin: 0;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    background: linear-gradient(180deg, #fdf6f9, #e6f7f5);
+    color: #444;
+  }
 
-    .container {
-      max-width: 800px;
-      background: white;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-    }
+  .container {
+    max-width: 850px;
+    margin: auto;
+    padding: 18px;
+  }
 
-    h1, h2 {
-      text-align: center;
-      color: #5a6c7d;
-    }
+  h1, h2 {
+    text-align: center;
+    color: #5a6c7d;
+  }
 
-    .bird {
-      text-align: center;
-      margin-bottom: 10px;
-    }
+  .card {
+    background: white;
+    padding: 18px;
+    border-radius: 18px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.07);
+    margin-bottom: 20px;
+    animation: fadeIn 0.6s ease;
+  }
 
-    .question {
-      margin: 20px 0;
-      padding: 15px;
-      border-radius: 15px;
-      background: #f9fcff;
-    }
+  @keyframes fadeIn {
+    from {opacity:0; transform:translateY(10px);}
+    to {opacity:1; transform:translateY(0);}
+  }
 
-    label {
-      display: block;
-      margin: 5px 0;
-      cursor: pointer;
-    }
+  .bird {
+    text-align: center;
+    animation: float 3s ease-in-out infinite;
+  }
 
-    button {
-      background: #a8dadc;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 12px;
-      font-size: 16px;
-      cursor: pointer;
-      display: block;
-      margin: 25px auto 0 auto;
-      transition: 0.2s;
-    }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
 
-    button:hover {
-      background: #90cfd1;
-    }
+  .question {
+    margin: 15px 0;
+    padding: 12px;
+    border-radius: 14px;
+    background: #f9fcff;
+    transition: 0.2s;
+  }
 
-    .result {
-      margin-top: 30px;
-      padding: 20px;
-      border-radius: 15px;
-      background: #eefaf7;
-      display: none;
-    }
+  .question:hover {
+    background: #eef7ff;
+  }
 
-    .disclaimer {
-      font-size: 12px;
-      margin-top: 25px;
-      color: #777;
-      text-align: center;
-    }
-  </style>
+  label {
+    display: block;
+    margin: 4px 0;
+    cursor: pointer;
+  }
+
+  button {
+    background: #a8dadc;
+    border: none;
+    padding: 14px;
+    border-radius: 14px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 15px;
+    transition: 0.2s;
+  }
+
+  button:hover {
+    background: #90cfd1;
+    transform: scale(1.02);
+  }
+
+  .progress {
+    height: 10px;
+    background: #e0f2f1;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 15px 0 20px 0;
+  }
+
+  .progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #76c7c0;
+    transition: width 0.3s;
+  }
+
+  .result {
+    display: none;
+    padding: 15px;
+    border-radius: 15px;
+    background: #eefaf7;
+    margin-top: 20px;
+  }
+
+  .warning {
+    font-size: 14px;
+    background: #fff4e6;
+    border-left: 5px solid #ffb703;
+  }
+
+  @media (max-width:600px) {
+    h1 { font-size: 22px; }
+    .card { padding: 14px; }
+  }
+</style>
 </head>
 
 <body>
-  <div class="container">
-    <div class="bird">
-      <svg width="120" height="120" viewBox="0 0 120 120">
-        <circle cx="60" cy="65" r="35" fill="#ffd166"/>
-        <circle cx="75" cy="50" r="20" fill="#ffe29a"/>
-        <circle cx="82" cy="45" r="5" fill="#333"/>
-        <polygon points="95,55 115,60 95,65" fill="#f4a261"/>
-        <circle cx="40" cy="80" r="10" fill="#ffb703"/>
-      </svg>
-      <h1>Wie gefährdet bin ich?</h1>
-      <p>Ein sanfter Selbsttest zu deinem Umgang mit Substanzen</p>
-    </div>
+<div class="container">
 
-    <form id="quizForm"></form>
-
-    <!-- WICHTIG: type="button" damit kein Formular-Submit passiert -->
-    <button type="button" id="resultBtn">Auswertung anzeigen</button>
-
-    <div class="result" id="resultBox"></div>
-
-    <div class="disclaimer">
-      Dieser Test ist keine medizinische Diagnose. Wenn du dir Sorgen machst,
-      wende dich an medizinische oder psychologische Fachstellen.
-    </div>
+  <div class="card bird">
+    <svg width="110" height="110" viewBox="0 0 120 120">
+      <circle cx="60" cy="65" r="35" fill="#ffd166"/>
+      <circle cx="75" cy="50" r="20" fill="#ffe29a"/>
+      <circle cx="82" cy="45" r="5" fill="#333"/>
+      <polygon points="95,55 115,60 95,65" fill="#f4a261"/>
+      <circle cx="40" cy="80" r="10" fill="#ffb703"/>
+    </svg>
+    <h1>Selbstreflexions-Fragebogen</h1>
   </div>
 
-  <script>
-    const questions = [
-      "Ich konsumiere Alkohol oder andere Substanzen häufiger als geplant.",
-      "Ich habe versucht, meinen Konsum zu reduzieren, es aber nicht geschafft.",
-      "Ich denke oft darüber nach, wann ich wieder konsumieren kann.",
-      "Mein Konsum hat meine Arbeit oder Schule beeinflusst.",
-      "Freunde oder Familie haben meinen Konsum kritisiert.",
-      "Ich konsumiere, um Stress oder negative Gefühle zu bewältigen.",
-      "Ich habe wegen Konsum Verpflichtungen vernachlässigt.",
-      "Ich brauche mehr als früher, um die gleiche Wirkung zu spüren.",
-      "Ich habe Schuldgefühle nach dem Konsum.",
-      "Ich konsumiere heimlich oder spiele es herunter.",
-      "Ich hatte schon Gedächtnislücken oder Filmrisse.",
-      "Ich habe riskante Situationen durch Konsum erlebt.",
-      "Ich fühle mich unruhig oder gereizt ohne Konsum.",
-      "Ich konsumiere weiter, obwohl es mir schadet.",
-      "Ich habe Hobbys oder Interessen wegen Konsum aufgegeben."
-    ];
+  <div class="card warning">
+    <strong>Wichtiger Hinweis:</strong><br><br>
+    Dieser Fragebogen ist <strong>kein medizinischer oder psychologischer Test</strong>.  
+    Er dient ausschließlich als <strong>Schulprojekt zur Selbstreflexion</strong> und stellt  
+    <strong>keine Diagnose</strong> dar.  
+    Die Ergebnisse sind nur Hinweise und können fachliche Beratung nicht ersetzen.  
+    Wenn du dir Sorgen über deinen Konsum oder dein Verhalten machst, wende dich bitte  
+    an eine Ärztin, einen Arzt oder eine Beratungsstelle.
+  </div>
 
-    const form = document.getElementById("quizForm");
-    const resultBtn = document.getElementById("resultBtn");
+  <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
 
-    // Fragen erzeugen
-    questions.forEach((q, index) => {
-      const div = document.createElement("div");
-      div.className = "question";
-      div.innerHTML = `<strong>${index + 1}. ${q}</strong>
-        <label><input type="radio" name="q${index}" value="0" required> Nie</label>
-        <label><input type="radio" name="q${index}" value="1"> Selten</label>
-        <label><input type="radio" name="q${index}" value="2"> Manchmal</label>
-        <label><input type="radio" name="q${index}" value="3"> Oft</label>
-        <label><input type="radio" name="q${index}" value="4"> Sehr oft</label>`;
-      form.appendChild(div);
-    });
+  <form id="quizForm" class="card"></form>
 
-    resultBtn.addEventListener("click", calculateResult);
+  <button type="button" id="resultBtn">Ergebnis anzeigen</button>
 
-    function calculateResult() {
-      const formData = new FormData(form);
-      let score = 0;
-      let answered = 0;
+  <div class="result card" id="resultBox"></div>
 
-      for (let value of formData.values()) {
-        score += parseInt(value);
-        answered++;
-      }
+</div>
 
-      if (answered < questions.length) {
-        alert("Bitte beantworte alle Fragen 🐦");
-        return;
-      }
+<script>
+const questions = [
+"Ich habe Tage, an denen ich mich besonders auf Konsum freue.",
+"Manchmal denke ich: 'Heute habe ich es mir verdient.'",
+"Ich nutze bestimmte Substanzen, um besser abschalten zu können.",
+"Mein Konsum ist stärker geworden als noch vor einem Jahr.",
+"Ich verschiebe Aufgaben, wenn ich konsumiert habe.",
+"Ich fühle mich ohne bestimmte Mittel manchmal weniger entspannt.",
+"Freizeitaktivitäten drehen sich oft um Konsumgelegenheiten.",
+"Ich habe schon Geld ausgegeben, das ich eigentlich anders brauchte.",
+"Ich rede meinen Konsum vor mir selbst klein.",
+"Ich würde mich unwohl fühlen, wenn andere alles wüssten.",
+"Ich plane meinen Tag manchmal um Konsum herum.",
+"Ich nutze Konsum als Belohnung.",
+"Ich habe nach Konsum schon Entscheidungen bereut.",
+"Ich fühle mich gereizt, wenn ich länger nichts nehme.",
+"Ich habe schon gesagt: 'Nur heute noch'.",
+"Ich habe Gewohnheiten entwickelt, die sich schwer ändern lassen.",
+"Ich brauche manchmal mehr als früher für denselben Effekt.",
+"Ich habe Konsum vor anderen versteckt.",
+"Ich habe Hobbys oder Kontakte vernachlässigt.",
+"Ich mache mir insgeheim Sorgen über mein Verhalten."
+];
 
-      const resultBox = document.getElementById("resultBox");
-      resultBox.style.display = "block";
+const form = document.getElementById("quizForm");
+const progressBar = document.getElementById("progressBar");
 
-      let message = "";
+questions.forEach((q, index) => {
+  const div = document.createElement("div");
+  div.className = "question";
+  div.innerHTML = `<strong>${index+1}. ${q}</strong>
+    <label><input type="radio" name="q${index}" value="0"> Trifft nicht zu</label>
+    <label><input type="radio" name="q${index}" value="1"> Eher nicht</label>
+    <label><input type="radio" name="q${index}" value="2"> Teils/teils</label>
+    <label><input type="radio" name="q${index}" value="3"> Eher ja</label>
+    <label><input type="radio" name="q${index}" value="4"> Trifft zu</label>`;
+  form.appendChild(div);
+});
 
-      if (score < 15) {
-        message = "🟢 Geringes Risiko: Aktuell zeigen sich nur wenige Anzeichen für problematischen Konsum.";
-      } else if (score < 30) {
-        message = "🟡 Mittleres Risiko: Einige Antworten deuten auf mögliche Risiken hin. Beobachte deinen Konsum bewusst.";
-      } else if (score < 45) {
-        message = "🟠 Erhöhtes Risiko: Mehrere Anzeichen sprechen für einen problematischen Umgang. Unterstützung könnte hilfreich sein.";
-      } else {
-        message = "🔴 Hohes Risiko: Deine Antworten zeigen viele Hinweise auf eine mögliche Abhängigkeit. Bitte wende dich an Fachstellen.";
-      }
+form.addEventListener("change", () => {
+  const answered = new FormData(form);
+  const percent = (answered.entries().length / questions.length) * 100;
+  progressBar.style.width = percent + "%";
+});
 
-      resultBox.innerHTML = `<h2>Dein Ergebnis</h2>
-                             <p><strong>Punktzahl:</strong> ${score}</p>
-                             <p>${message}</p>`;
+document.getElementById("resultBtn").addEventListener("click", () => {
+  const data = new FormData(form);
+  let score = 0;
+  let count = 0;
 
-      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-    }
-  </script>
+  for (let val of data.values()) {
+    score += parseInt(val);
+    count++;
+  }
+
+  if (count < questions.length) {
+    alert("Bitte beantworte alle Fragen 🐦");
+    return;
+  }
+
+  const resultBox = document.getElementById("resultBox");
+  resultBox.style.display = "block";
+
+  let message = "";
+
+  if (score < 25) message = "🟢 Niedrige Auffälligkeit – aktuell zeigen sich wenige Hinweise auf problematische Muster.";
+  else if (score < 45) message = "🟡 Leichte Auffälligkeit – einige Gewohnheiten könnten riskanter werden.";
+  else if (score < 65) message = "🟠 Deutliche Auffälligkeit – Unterstützung oder Beratung könnte sinnvoll sein.";
+  else message = "🔴 Hohe Auffälligkeit – es wäre gut, mit einer Fachperson zu sprechen.";
+
+  resultBox.innerHTML = `<h2>Dein Ergebnis</h2>
+  <p><strong>Punktzahl:</strong> ${score}</p>
+  <p>${message}</p>`;
+});
+</script>
+
 </body>
 </html>
